@@ -1,7 +1,7 @@
 const { Client } = require('discord.js');
 const axios = require('axios');
 const https = require('https');
-const { token, CAT_API_KEY, DOG_API_KEY, HEC_TOKEN, splunk_url } = require('./settings');
+const { token, CAT_API_KEY, DOG_API_KEY, HEC_TOKEN, splunk_url, testing } = require('./settings');
 const client = new Client();
 
 client.on('ready', () => console.log('Ready!'));
@@ -24,12 +24,13 @@ client.on('message', (msg) => {
             msg.channel.send('Receiving transmission.');
             //let event = 'Set a course.';
             //logToSplunk(event);
+            getADog(msg);
         }
     }
 });
 
 function isTesting(msg) {
-    if (msg.channel.id === '744625770642800713') {
+    if (msg.channel.id === '744625770642800713' && testing) {
         return true;
     }
 }
@@ -52,6 +53,17 @@ function logToSplunk(event) {
         console.log(response.data);
     }, (error) => {
         console.log(error);
+    });
+}
+
+function getADog(msg) {
+    // might need to stringify the message
+    var url = 'https://api.thedogapi.com/v1/images/search';
+    axios.get(url)
+    .then((response) => {
+        msg.channel.send('success ' + response.data.json);
+    }, (error) => {
+        msg.channel.send('error ' + error);
     });
 }
 
