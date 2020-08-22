@@ -31,9 +31,11 @@ client.on('message', (msg) => {
 });
 
 function isTesting(msg) {
-    if (msg.channel.id === '744625770642800713' && testing) {
+    if (msg.channel.id === '744625770642800713' && Boolean(testing)) {
+        msg.channel.send('server if block');
         return true;
     } else {
+        msg.channel.send('server else block');
         return false;
     }
 }
