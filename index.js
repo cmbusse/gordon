@@ -22,6 +22,7 @@ client.on('message', (msg) => {
     if (isTesting(msg)) {
         if (msg.content.match(/^test$/i)) {
             msg.channel.send('Receiving transmission.');
+            msg.channel.send('local');
             //let event = 'Set a course.';
             //logToSplunk(event);
             getADog(msg);
@@ -32,6 +33,8 @@ client.on('message', (msg) => {
 function isTesting(msg) {
     if (msg.channel.id === '744625770642800713' && testing) {
         return true;
+    } else {
+        return false;
     }
 }
 
