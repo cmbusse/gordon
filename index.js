@@ -22,20 +22,17 @@ client.on('message', (msg) => {
     if (isTesting(msg)) {
         if (msg.content.match(/^test$/i)) {
             msg.channel.send('Receiving transmission.');
-            msg.channel.send('local');
             //let event = 'Set a course.';
             //logToSplunk(event);
-            getADog(msg);
+            //getADog(msg);
         }
     }
 });
 
 function isTesting(msg) {
     if (msg.channel.id === '744625770642800713' && Boolean(testing)) {
-        msg.channel.send('server if block');
         return true;
     } else {
-        msg.channel.send('server else block');
         return false;
     }
 }
