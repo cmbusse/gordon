@@ -8,16 +8,7 @@ client.on('ready', () => console.log('Ready!'));
 
 client.on('message', (msg) => {
     if (msg.author.bot) return;
-
-    if (isTesting(msg) === true && msg.content.match(/^test$/i)) {
-        msg.channel.send('Receiving transmission.');
-    }
-
-    if (isTesting(msg) === false && msg.content.match(/^test$/i)) {
-        msg.channel.send('Hailing frequencies open.');
-    }
-
-    
+   
     if (isTesting(msg) === false) {
         if (msg.content.match(/(hi|hello|hey|yo|sup|what's up|whats up) gordon/i)) {
             msg.channel.send('Hello ' + msg.author.username);
