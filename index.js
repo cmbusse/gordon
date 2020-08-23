@@ -9,11 +9,11 @@ client.on('ready', () => console.log('Ready!'));
 client.on('message', (msg) => {
     if (msg.author.bot) return;
 
-    if (isTesting(msg)) {
+    if (isTesting(msg) === true && msg.content.match(/^test$/i)) {
         msg.channel.send('Receiving transmission.');
     }
 
-    if (!isTesting(msg)) {
+    if (isTesting(msg) === false && msg.content.match(/^test$/i)) {
         msg.channel.send('Hailing frequencies open.');
     }
 
@@ -44,10 +44,10 @@ function isTesting(msg) {
         return false;
     } else if (flag === 'testing' && msg.guild.id === '744625770642800710'){
         return true;
-    } else {
+    } /* else {
         let event = `Error detected in \'isTesting\' function.  Value of flag is ${flag} in server ${msg.guild.name}`;
         logToSplunk(event);
-    }
+    } */
 }
 
 function logToSplunk(event) {
