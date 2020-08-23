@@ -1,7 +1,7 @@
 const { Client } = require('discord.js');
 const axios = require('axios');
 const https = require('https');
-const { token, CAT_API_KEY, DOG_API_KEY, HEC_TOKEN, splunk_url, testing } = require('./settings');
+const { token, CAT_API_KEY, DOG_API_KEY, HEC_TOKEN, splunk_url, flag } = require('./settings');
 const client = new Client();
 
 client.on('ready', () => console.log('Ready!'));
@@ -9,6 +9,15 @@ client.on('ready', () => console.log('Ready!'));
 client.on('message', (msg) => {
     if (msg.author.bot) return;
 
+    if (isTesting(msg)) {
+        msg.channel.send('Receiving transmission.');
+    }
+
+    if (!isTesting(msg)) {
+        msg.channel.send('Hailing frequencies open.');
+    }
+
+    /*
     if (!isTesting(msg)) {
         if (msg.content.match(/(hi|hello|hey|yo|sup|what's up|whats up) gordon/i)) {
             msg.channel.send('Hello ' + msg.author.username);
@@ -18,7 +27,7 @@ client.on('message', (msg) => {
             msg.channel.send('pong');
         }
     }
-
+    
     if (isTesting(msg)) {
         if (msg.content.match(/^test$/i)) {
             msg.channel.send('Receiving transmission.');
@@ -27,13 +36,17 @@ client.on('message', (msg) => {
             //getADog(msg);
         }
     }
+    */
 });
 
 function isTesting(msg) {
-    if (msg.channel.id === '744625770642800713' && Boolean(testing)) {
+    if (flag === 'live' && msg.guild.id !== '744625770642800710') {
+        return false;
+    } else if (flag === 'testing' && msg.guild.id === '744625770642800710'){
         return true;
     } else {
-        return false;
+        let event = `Error detected in \'isTesting\' function.  Value of flag is ${flag} in server ${msg.guild.name}`;
+        logToSplunk(event);
     }
 }
 
