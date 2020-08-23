@@ -17,8 +17,8 @@ client.on('message', (msg) => {
         msg.channel.send('Hailing frequencies open.');
     }
 
-    /*
-    if (!isTesting(msg)) {
+    
+    if (isTesting(msg) === false) {
         if (msg.content.match(/(hi|hello|hey|yo|sup|what's up|whats up) gordon/i)) {
             msg.channel.send('Hello ' + msg.author.username);
         }
@@ -28,15 +28,13 @@ client.on('message', (msg) => {
         }
     }
     
-    if (isTesting(msg)) {
+    if (isTesting(msg) === true) {
         if (msg.content.match(/^test$/i)) {
             msg.channel.send('Receiving transmission.');
-            //let event = 'Set a course.';
-            //logToSplunk(event);
             //getADog(msg);
         }
     }
-    */
+
 });
 
 function isTesting(msg) {
@@ -44,13 +42,13 @@ function isTesting(msg) {
         return false;
     } else if (flag === 'testing' && msg.guild.id === '744625770642800710'){
         return true;
-    } /* else {
-        let event = `Error detected in \'isTesting\' function.  Value of flag is ${flag} in server ${msg.guild.name}`;
-        logToSplunk(event);
-    } */
+    }
 }
 
 function logToSplunk(event) {
+    // Call function by first specifying what the event should be, then calling logToSplunk(event)
+    //let event = 'Set a course.';
+    //logToSplunk(event);
     const agent = new https.Agent({  
         rejectUnauthorized: false
       });
