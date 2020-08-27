@@ -28,9 +28,11 @@ client.on('message', (msg) => {
     }
     
     if (isTesting(msg) === true) {
-        if (msg.content.match(/^test$/i)) {
-            //msg.channel.send('Receiving transmission.');
-            getACat(msg);
+        if (msg.content.match(/chonk/i)) {
+            msg.channel.send('Receiving transmission.');
+            let embed = createMessageEmbed('https://i.ytimg.com/vi/M6iu2n_Kjkk/maxresdefault.jpg', 'Did someone say... CHONK?!', 'Oh Lawdy');
+
+            msg.channel.send(embed);
         }
     }
 
@@ -45,9 +47,6 @@ function isTesting(msg) {
 }
 
 function logToSplunk(event) {
-    // Call function by first specifying what the event should be, then calling logToSplunk(event)
-    //let event = 'Set a course.';
-    //logToSplunk(event);
     const agent = new https.Agent({  
         rejectUnauthorized: false
       });
@@ -74,22 +73,14 @@ function getADog(msg) {
         headers: { 'X-API-KEY': DOG_API_KEY }
     }
     axios.get(url, config)
-    .then((response) => {
-        //import Discord from 'discord.js';
-        
+    .then((response) => {        
         var image = response['data'][0]['url'];
-
-        const embed = new Discord.MessageEmbed()
-            .setColor('#36393f')
-            .setTitle('Here, have a dog!')
-            .setImage(image)
-            .setFooter('BORK!');
-
-        //msg.channel.send(`success ${JSON.stringify(response.data)}`);
-        //msg.channel.send(`url: ${JSON.stringify(response['data'][0]['url'])}`);
+        let embed = createMessageEmbed(image, 'Here, have a dog!', 'BORK!');
         msg.channel.send(embed);
     }, (error) => {
-        msg.channel.send('error ' + error);
+        msg.channel.send('Beep boop, I broke :^(');
+        let event = JSON.stringify(error.data);
+        logToSplunk(event);
     });
 }
 
@@ -99,23 +90,25 @@ function getACat(msg) {
         headers: { 'X-API-KEY': CAT_API_KEY }
     }
     axios.get(url, config)
-    .then((response) => {
-        //import Discord from 'discord.js';
-        
+    .then((response) => {        
         var image = response['data'][0]['url'];
-
-        const embed = new Discord.MessageEmbed()
-            .setColor('#36393f')
-            .setTitle('Here, have a cat!')
-            .setImage(image)
-            .setFooter('MEOW!');
-
-        //msg.channel.send(`success ${JSON.stringify(response.data)}`);
-        //msg.channel.send(`url: ${JSON.stringify(response['data'][0]['url'])}`);
+        let embed = createMessageEmbed(image, 'Here, have a cat!', 'MEOW!');
         msg.channel.send(embed);
     }, (error) => {
-        msg.channel.send('error ' + error);
+        msg.channel.send('Beep boop, I broke :^(');
+        let event = JSON.stringify(error.data);
+        logToSplunk(event);
     });
+}
+
+function createMessageEmbed(image, title, footer) {
+    const embed = new Discord.MessageEmbed()
+        .setColor('#36393f')
+        .setTitle(title)
+        .setImage(image)
+        .setFooter(footer);
+    
+    return embed;
 }
 
 client.login(token);
