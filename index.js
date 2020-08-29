@@ -19,20 +19,22 @@ client.on('message', (msg) => {
         }
 
         if(msg.content.match(/^woof!$/i)) {
-            getADog(msg);
+            getAnAnimal(msg, 'dog');
         }
 
         if(msg.content.match(/^meow!$/i)) {
-            getACat(msg);
+            getAnAnimal(msg, 'cat');
         }
     }
     
     if (isTesting(msg) === true) {
-        if (msg.content.match(/chonk/i)) {
+        if (msg.content.match(/^test$/i)) {
             msg.channel.send('Receiving transmission.');
-            let embed = createMessageEmbed('https://i.ytimg.com/vi/M6iu2n_Kjkk/maxresdefault.jpg', 'Did someone say... CHONK?!', 'Oh Lawdy');
+            
+            //let embed = createMessageEmbed('https://i.ytimg.com/vi/M6iu2n_Kjkk/maxresdefault.jpg', 'Did someone say... CHONK?!');
+            //msg.channel.send(embed);
 
-            msg.channel.send(embed);
+            getAnAnimal(msg, 'dog');            
         }
     }
 
@@ -67,15 +69,22 @@ function logToSplunk(event) {
     });
 }
 
-function getADog(msg) {
-    var url = 'https://api.thedogapi.com/v1/images/search';
+function getAnAnimal(msg, animal = 'cat') {
+    if (animal === 'cat') {
+        var token = CAT_API_KEY;
+        var footer = 'MEOW!';
+    } else {
+        var token = DOG_API_KEY;
+        var footer = 'BORK!';
+    }
+    var url = 'https://api.the' + animal + 'api.com/v1/images/search';
     const config = {
-        headers: { 'X-API-KEY': DOG_API_KEY }
+        headers: { 'X-API-KEY': token }
     }
     axios.get(url, config)
     .then((response) => {        
         var image = response['data'][0]['url'];
-        let embed = createMessageEmbed(image, 'Here, have a dog!', 'BORK!');
+        let embed = createMessageEmbed(image, 'Here, have a ' + animal + '!', footer);
         msg.channel.send(embed);
     }, (error) => {
         msg.channel.send('Beep boop, I broke :^(');
@@ -84,24 +93,7 @@ function getADog(msg) {
     });
 }
 
-function getACat(msg) {
-    var url = 'https://api.thecatapi.com/v1/images/search';
-    const config = {
-        headers: { 'X-API-KEY': CAT_API_KEY }
-    }
-    axios.get(url, config)
-    .then((response) => {        
-        var image = response['data'][0]['url'];
-        let embed = createMessageEmbed(image, 'Here, have a cat!', 'MEOW!');
-        msg.channel.send(embed);
-    }, (error) => {
-        msg.channel.send('Beep boop, I broke :^(');
-        let event = JSON.stringify(error.data);
-        logToSplunk(event);
-    });
-}
-
-function createMessageEmbed(image, title, footer) {
+function createMessageEmbed(image, title = '', footer = '') {
     const embed = new Discord.MessageEmbed()
         .setColor('#36393f')
         .setTitle(title)
