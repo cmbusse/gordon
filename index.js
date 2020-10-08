@@ -31,19 +31,38 @@ client.on('message', (msg) => {
         if (msg.content.match(/^test$/i)) {
             msg.channel.send('Receiving transmission.');
             
-            //let embed = createMessageEmbed('https://i.ytimg.com/vi/M6iu2n_Kjkk/maxresdefault.jpg', 'Did someone say... CHONK?!');
-            //msg.channel.send(embed);
-
-            getAnAnimal(msg, 'dog');            
+            let chris = client.users.cache.get('141628186290159616');
+            chris.send('test response!!!');    
         }
     }
 
 });
 
-function isTesting(msg) {
-    if (flag === 'live' && msg.guild.id !== '744625770642800710') {
+client.on('voiceStateUpdate', (oldState, newState) => {
+    if (isTesting(newState) === false){
+        let newUserChannel = newState.channel;
+        let oldUserChannel = oldState.channel;
+
+        if(oldUserChannel === null && newUserChannel !== null) {
+            let user = newState.member.user;
+            let length = newUserChannel.members.array().length;
+            if (user.id !== '141628186290159616' && length > 1) {
+                let chris = client.users.cache.get('141628186290159616');
+                const users = [];
+                for (var member of newUserChannel.members.array()) {
+                    users.push(member.user.username);
+                }
+                chris.send(`${length} people are in chat, sounds like games are afoot!  In chat are:  ${users.join(", ")}`);
+            }
+        } 
+    }
+
+});
+
+function isTesting(obj) {
+    if (flag === 'live' && obj.guild.id !== '744625770642800710') {
         return false;
-    } else if (flag === 'testing' && msg.guild.id === '744625770642800710'){
+    } else if (flag === 'testing' && obj.guild.id === '744625770642800710'){
         return true;
     }
 }
