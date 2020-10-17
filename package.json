@@ -12,6 +12,7 @@
   "dependencies": {
     "axios": "^0.20.0",
     "discord.js": "^12.3.1",
-    "https": "^1.0.0"
+    "https": "^1.0.0",
+    "snoowrap": "^1.21.0"
   }
 }

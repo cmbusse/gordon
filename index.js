@@ -1,7 +1,8 @@
 const Discord = require('discord.js');
 const axios = require('axios');
 const https = require('https');
-const { token, CAT_API_KEY, DOG_API_KEY, HEC_TOKEN, splunk_url, flag } = require('./settings');
+const snoowrap = require('snoowrap');
+const { token, CAT_API_KEY, DOG_API_KEY, HEC_TOKEN, splunk_url, flag, clientId, clientSecret, username, password } = require('./settings');
 const client = new Discord.Client();
 
 client.on('ready', () => console.log('Ready!'));
@@ -25,17 +26,44 @@ client.on('message', (msg) => {
         if(msg.content.match(/^meow!$/i)) {
             getAnAnimal(msg, 'cat');
         }
+
+        if(msg.content.match(/^dndmeme!$/i)) {
+            grabMeme(msg);
+        }
     }
     
     if (isTesting(msg) === true) {
         if (msg.content.match(/^test$/i)) {
-            msg.channel.send('Receiving transmission.');
-            
-            let chris = client.users.cache.get('141628186290159616');
-            chris.send('test response!!!');    
+            msg.channel.send('Retrieving Spicy Meme, hold please!');
+            const reddit = new snoowrap({
+                userAgent: 'android:com.example.gordon-discord:v0.0.1 (by /u/Trofee38)',
+                clientId: clientId,
+                clientSecret: clientSecret,
+                username: username,
+                password: password
+            });
+            const limit = 100;
+            var image = '';
+            const promise = reddit.getSubreddit('dndmemes').getTop({time: 'month', limit: limit})
+                .then(response => {
+                    var urls = [];
+                    var titles = [];
+                    for (var i = 0; i < limit; i++){
+                        urls.push(response[i]['url']);
+                        titles.push(response[i]['title']);
+                    }
+                    const randomNum = Math.floor(Math.random() * limit);
+                    image = urls[randomNum];
+                    title = titles[randomNum];
+                });
+            Promise.all([promise]).then(() => {
+                let embed = createMessageEmbed(image, title);
+                let messageId = client.users.cache.get('744624321044938914').lastMessageID;
+                msg.channel.messages.cache.get(messageId).delete();
+                msg.channel.send(embed);
+            });
         }
     }
-
 });
 
 client.on('voiceStateUpdate', (oldState, newState) => {
@@ -120,6 +148,37 @@ function createMessageEmbed(image, title = '', footer = '') {
         .setFooter(footer);
     
     return embed;
+}
+
+function grabMeme(msg) {
+    msg.channel.send('Retrieving Spicy Meme, hold please!');
+    const reddit = new snoowrap({
+        userAgent: 'android:com.example.gordon-discord:v0.0.1 (by /u/Trofee38)',
+        clientId: clientId,
+        clientSecret: clientSecret,
+        username: username,
+        password: password
+    });
+    const limit = 100;
+    var image = '';
+    const promise = reddit.getSubreddit('dndmemes').getTop({time: 'month', limit: limit})
+        .then(response => {
+            var urls = [];
+            var titles = [];
+            for (var i = 0; i < limit; i++){
+                urls.push(response[i]['url']);
+                titles.push(response[i]['title']);
+            }
+            const randomNum = Math.floor(Math.random() * limit);
+            image = urls[randomNum];
+            title = titles[randomNum];
+        });
+    Promise.all([promise]).then(() => {
+        let embed = createMessageEmbed(image, title);
+        let messageId = client.users.cache.get('744624321044938914').lastMessageID;
+        msg.channel.messages.cache.get(messageId).delete();
+        msg.channel.send(embed);
+    });
 }
 
 client.login(token);
